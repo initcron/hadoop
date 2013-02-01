@@ -1,0 +1,54 @@
+#!/bin/bash
+#
+# chkconfig: 345 26 74
+# description: LWE Core
+#
+# Get function from functions library
+
+. /etc/init.d/functions
+export JAVA_HOME=<%= node["java"]["java_home"] %>
+
+start() {
+         daemon --user <%= node["hadoop"]["username"] %> /opt/<%= node["oozie"]["folder-name"] %>/bin/oozie-start.sh
+         retval=$?
+         echo
+         [ $retval -eq 0 ] && touch /var/lock/subsys/oozie
+	 sleep 4
+         return $retval
+}
+stop() {
+         runuser -l <%= node["hadoop"]["username"] %> -c "/opt/<%= node["oozie"]["folder-name"] %>/bin/oozie-stop.sh"
+         retval=$?
+         echo
+         [ $retval -eq 0 ] && rm -rf /var/lock/subsys/oozie
+         return $retval
+}
+status() {
+        ps auwwx | grep oozie | grep -v grep
+        retval=$?
+	echo
+	return $retval
+}
+
+### main logic ###
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  status)
+        status 
+        ;;
+  restart|reload|condrestart)
+        stop
+	sleep 5
+        start
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart|reload|status}"
+        exit 1
+esac
+exit 0
+

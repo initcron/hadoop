@@ -1,0 +1,19 @@
+#!/bin/sh
+
+source /etc/environment
+source /opt/<%= node["hadoop"]["folder-name"] %>/libexec/hadoop-config.sh
+source /opt/<%= node["hadoop"]["folder-name"] %>/conf/hadoop-env.sh
+
+export JAVA_HOME=<%= node["java"]["java_home"] %>
+export HADOOP_HOME=/opt/<%= node["hadoop"]["folder-name"] %>
+export HADOOP_CLASSPATH=:/opt/<%= node["hadoop"]["folder-name"] %>/lib/*.jar
+
+exec 2>&1
+exec chpst -u hadoop /opt/<%= node["hadoop"]["folder-name"] %>/bin/hadoop --config /opt/<%= node["hadoop"]["folder-name"] %>/conf tasktracker
+
+
+
+
+
+
+

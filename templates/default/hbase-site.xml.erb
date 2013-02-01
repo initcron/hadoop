@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+  <property>
+    <name>hbase.cluster.distributed</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hbase.rootdir</name>
+    <value>hdfs://<%= @node[:Hadoop][:Master] %>:50001/hbase</value>
+    <description>The directory shared by RegionServers.
+    </description>
+  </property>
+  <property>
+    <name>hbase.zookeeper.property.clientPort</name>
+    <value><%= @node[:zookeeper][:client_port] %></value>
+  </property>
+  <property>
+    <name>hbase.zookeeper.quorum</name>
+    <value><%= @node[:default][:zkHosts] %></value>
+  </property>
+  <property>
+    <name>kafka.zk.connect</name>
+    <value><%= @node[:kafka][:zkConnect] %></value>
+  </property>
+
+  <property>
+    <name>hbase.hregion.majorcompaction</name>
+    <value><%= @node[:hbase][:hregion][:majorcompaction] %></value>
+  </property>
+
+  <property>
+    <name>hbase.hregion.max.filesize</name>
+    <value><%= @node[:hbase][:hregion][:maxFileSize] %></value>
+  </property>
+  
+  <property>
+    <name>hbase.hregion.memstore.block.multiplier</name>
+    <value><%= @node[:hbase][:hregion][:memstoreBlockMultiplier] %></value>
+  </property>
+  
+  <property>
+    <name>hbase.hregion.memstore.flush.size</name>
+    <value><%= @node[:hbase][:hregion][:memstoreFlushSize] %></value>
+  </property>
+  
+  <property>
+    <name>hbase.hstore.blockingStoreFiles</name>
+    <value><%= @node[:hbase][:hstore][:blockingStoreFiles] %></value>
+  </property>
+
+  <property>
+    <name>hbase.regionserver.handler.count</name>
+    <value><%= @node[:hbase][:hregion][:handlerCount] %></value>
+  </property>
+
+  <property>
+    <name>hbase.hstore.compaction.ratio</name>
+    <value><%= @node[:hbase][:hstore][:compactionRatio] %></value>
+  </property>
+
+  <property>
+    <name>hbase.regionserver.region.split.policy</name>
+    <value><%= @node[:hbase][:hregion][:regionSplitPolicy] %></value>
+  </property>
+
+  <property>
+    <name>hfile.block.cache.size</name>
+    <value><%= @node[:hbase][:hfile][:blockCacheSize] %></value>
+  </property>
+
+  <property>
+    <name>hbase.regionserver.global.memstore.upperLimit</name>
+    <value><%= @node[:hbase][:hregion][:globalMemstoreUpperLimit] %></value>
+  </property>
+
+  <property>
+    <name>hbase.replication</name>
+    <value><%= @node[:hbase][:replication] %></value>
+  </property>
+
+</configuration>
+

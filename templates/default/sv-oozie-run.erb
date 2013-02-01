@@ -1,0 +1,52 @@
+#!/bin/sh
+
+
+export JAVA_HOME=<%= node["java"]["java_home"] %>
+
+BASEDIR=/opt/<%= node["oozie"]["folder-name"] %>
+
+source ${BASEDIR}/bin/oozie-sys.sh
+
+CATALINA=${OOZIE_CATALINA_HOME:-${BASEDIR}/oozie-server}/bin/catalina.sh
+
+  echo "Using   CATALINA_OPTS:       ${CATALINA_OPTS}"
+
+  catalina_opts="-Doozie.home.dir=/opt/<%= node["oozie"]["folder-name"] %>";
+  catalina_opts="${catalina_opts} -Doozie.config.dir=/opt/<%= node["oozie"]["folder-name"] %>/conf";
+  catalina_opts="${catalina_opts} -Doozie.log.dir=/opt/<%= node["oozie"]["folder-name"] %>/logs";
+  catalina_opts="${catalina_opts} -Doozie.data.dir=/opt/<%= node["oozie"]["folder-name"] %>/data";
+  catalina_opts="${catalina_opts} -Dderby.system.home=/opt/<%= node["oozie"]["folder-name"] %>/logs";
+
+  catalina_opts="${catalina_opts} -Doozie.config.file=oozie-site.xml";
+
+  catalina_opts="${catalina_opts} -Doozie.log4j.file=oozie-log4j.properties";
+  catalina_opts="${catalina_opts} -Doozie.log4j.reload=10";
+
+  catalina_opts="${catalina_opts} -Doozie.http.hostname=<%= node["hostname"] %>";
+  catalina_opts="${catalina_opts} -Doozie.admin.port=11001";
+  catalina_opts="${catalina_opts} -Doozie.http.port=11000";
+  catalina_opts="${catalina_opts} -Doozie.base.url=http://<%= node["hostname"] %>:11000/oozie";
+
+  echo "Adding to CATALINA_OPTS:     ${catalina_opts}"
+
+  export CATALINA_OPTS="${CATALINA_OPTS} ${catalina_opts}"
+
+  if [ ! -e "/opt/<%= node["oozie"]["folder-name"] %>/oozie-server/webapps/oozie.war" ]; then
+    echo "WARN: Oozie WAR has not been set up at ''/opt/<%= node["oozie"]["folder-name"] %>/oozie-server/webapps'', doing default set up"
+    ${BASEDIR}/bin/oozie-setup.sh
+    if [ "$?" != "0" ]; then
+      exit -1
+    fi
+  fi
+  echo
+
+
+
+exec 2>&1
+exec chpst -u <%= node["hadoop"]["username"] %>  /opt/<%= node["oozie"]["folder-name"] %>/oozie-server/bin/catalina.sh run
+
+
+
+
+
+

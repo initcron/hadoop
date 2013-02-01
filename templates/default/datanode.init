@@ -1,0 +1,62 @@
+#!/bin/bash
+#
+# chkconfig: 345 21 79
+# description: Hadoop Datanode
+#
+# Get function from functions library
+
+. /etc/init.d/functions
+source /etc/environment
+source /opt/<%= node["hadoop"]["folder-name"] %>/libexec/hadoop-config.sh
+source /opt/<%= node["hadoop"]["folder-name"] %>/conf/hadoop-env.sh
+
+export JAVA_HOME=<%= node["java"]["java_home"] %>
+export HADOOP_HOME=/opt/<%= node["hadoop"]["folder-name"] %>
+export HADOOP_CLASSPATH=:/opt/<%= node["hadoop"]["folder-name"] %>/lib/*.jar
+
+start() {
+         daemon --user <%= node["hadoop"]["username"] %> /opt/<%= node["hadoop"]["folder-name"] %>/bin/hadoop-daemon.sh --config /opt/<%= node["hadoop"]["folder-name"] %>/conf start datanode
+         retval=$?
+         echo
+         [ $retval -eq 0 ] && touch /var/lock/subsys/datanode
+	 sleep 4
+         return $retval
+
+
+}
+stop() {
+         runuser -l <%= node["hadoop"]["username"] %> -c "/opt/<%= node["hadoop"]["folder-name"] %>/bin/hadoop-daemon.sh --config /opt/<%= node["hadoop"]["folder-name"] %>/conf stop datanode"
+         retval=$?
+         echo
+         [ $retval -eq 0 ] && rm -rf /var/lock/subsys/datanode
+         return $retval
+}
+status() {
+        ps auwwx | grep org.apache.hadoop.hdfs.server.datanode.DataNode | grep -v grep
+        retval=$?
+	echo
+	return $retval
+}
+
+### main logic ###
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  status)
+        status 
+        ;;
+  restart|reload|condrestart)
+        stop
+	sleep 5
+        start
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart|reload|status}"
+        exit 1
+esac
+exit 0
+

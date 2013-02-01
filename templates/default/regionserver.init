@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+# chkconfig: 345 25 75
+# description: LWE Core
+#
+# Get function from functions library
+
+. /etc/init.d/functions
+source /etc/environment
+
+start() {
+         daemon --user <%= node["hadoop"]["username"] %> /opt/<%= node["hbase"]["folder-name"] %>/bin/hbase-daemon.sh --config /opt/<%= node["hbase"]["folder-name"] %>/conf  start regionserver 
+         retval=$?
+         echo
+         [ $retval -eq 0 ] && touch /var/lock/subsys/regionserver
+	 sleep 10
+         return $retval
+
+
+}
+stop() {
+         runuser -l <%= node["hadoop"]["username"] %> -c " /opt/<%= node["hbase"]["folder-name"] %>/bin/hbase-daemon.sh stop regionserver"
+         retval=$?
+         echo
+         [ $retval -eq 0 ] && rm -rf /var/lock/subsys/regionserver
+         return $retval
+}
+status() {
+        ps auwwx | grep regionserver | grep hbase | grep -v grep
+        retval=$?
+	echo
+	return $retval
+}
+
+### main logic ###
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  status)
+        status 
+        ;;
+  restart|reload|condrestart)
+        stop
+	sleep 5
+        start
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart|reload|status}"
+        exit 1
+esac
+exit 0
+

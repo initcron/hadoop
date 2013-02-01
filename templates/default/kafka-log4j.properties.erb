@@ -1,0 +1,9 @@
+log4j.rootLogger=INFO, main
+
+log4j.appender.main=org.apache.log4j.RollingFileAppender
+log4j.appender.main.File=<%= node["kafka"]["home"] %>/logs/kafka.log
+log4j.appender.main.layout = org.apache.log4j.PatternLayout
+log4j.appender.main.layout.ConversionPattern=[%d] %p %m (%c)%n
+log4j.appender.main.MaxFileSize=10MB
+log4j.appender.main.MaxBackupIndex=99
+log4j.appender.main.append=true
